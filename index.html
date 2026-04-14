@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>地震學大師秘笈</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    keyframes: {
+                        dash: { to: { strokeDashoffset: -20 } },
+                        slideRight: { to: { transform: 'translateX(3px)' } },
+                        slideLeft: { to: { transform: 'translateX(-3px)' } },
+                        swing: { '0%': { transform: 'rotate(-5deg)' }, '100%': { transform: 'rotate(5deg)' } },
+                        wave: { to: { d: 'path("M 0 70 Q 50 80 100 70 T 200 70 L 200 100 L 0 100 Z")' } },
+                        sink: { '0%': { transform: 'translateY(0) rotate(0deg)' }, '100%': { transform: 'translateY(15px) rotate(10deg)' } }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen bg-gray-50 py-8 px-4 sm:px-8 font-sans">
+    
+    <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 flex items-center justify-center gap-3">
+                <i data-lucide="globe" class="w-10 h-10 text-blue-600"></i>
+                地震學大師秘笈
+            </h1>
+            <p class="mt-4 text-gray-600">點擊下方卡片，探索地球內部的奧秘與地震學的科學原理！</p>
+        </div>
+
+        <div id="accordion-container" class="space-y-4"></div>
+    </div>
+
+    <script>
+        // 資料集轉換
+        const topics = [
+            {
+                id: 1,
+                title: "1. 地震學的基礎定義與研究方法",
+                icon: "activity",
+                color: "text-blue-500",
+                content: "地震學是研究固體地球中彈性波或聲波的科學。當震源（如天然斷層錯動或人工爆炸）釋放能量時，會產生地震波，這些波穿過地球內部介質，最後被地表的檢震器（地震儀）記錄成地震圖。地震圖就像是地球的「心電圖」，包含了震源位置、性質以及傳播路徑的物理訊息。",
+                analogy: "想像你往平靜的池塘裡丟了一顆石頭（震源），水面上會產生一圈圈向外擴散的漣漪（地震波）。如果我們在岸邊放幾個浮標（檢震器），觀察浮標上下起伏的時間和幅度，我們就能反推石頭是在哪裡落水、石頭有多大！",
+                svg: `
+                    <svg viewBox="0 0 200 100" class="w-full h-32 bg-blue-50 rounded-lg">
+                        <circle cx="100" cy="50" r="4" class="fill-blue-600 animate-ping" />
+                        <circle cx="100" cy="50" r="20" fill="none" stroke="#3b82f6" stroke-width="2" class="animate-[ping_2s_linear_infinite]" />
+                        <circle cx="100" cy="50" r="40" fill="none" stroke="#60a5fa" stroke-width="2" class="animate-[ping_2s_linear_infinite_0.5s]" />
+                        <path d="M 20 80 L 30 50 L 40 80" fill="none" stroke="#1e40af" stroke-width="3" />
+                        <text x="20" y="95" class="text-[10px] fill-gray-600">檢震器</text>
+                        <text x="90" y="40" class="text-[10px] fill-gray-600">震源</text>
+                    </svg>
+                `
+            },
+            {
+                id: 2,
+                title: "2. 地球內部的層狀構造探測",
+                icon: "globe",
+                color: "text-emerald-500",
+                content: "人類鑽探的極限大約只有 13 公里，但地球半徑高達 6371 公里！因此地震波成為探索地心的唯一利器。科學家透過觀測地震波在不同深度速度的變化，發現了地殼、地函、液態外地核與固態內地核的分層構造。例如，特定地震波（ScS波）在核幔邊界的反射振幅，證實了外地核是流體鐵質。",
+                analogy: "這就像是我們去市場挑西瓜！你沒辦法把每顆西瓜都切開來看（鑽探極限），所以你會用手去「拍打」西瓜（製造地震波），聽聽看傳出來的聲音是清脆還是沉悶。醫生用的「超音波」也是完全一樣的道理，不用開刀就能看見肚子裡的寶寶。",
+                svg: `
+                    <svg viewBox="0 0 200 100" class="w-full h-32 bg-emerald-50 rounded-lg">
+                        <circle cx="100" cy="120" r="90" fill="#fcd34d" />
+                        <circle cx="100" cy="120" r="60" fill="#f97316" />
+                        <circle cx="100" cy="120" r="30" fill="#ef4444" />
+                        <path d="M 10 30 Q 50 100 100 60" fill="none" stroke="#059669" stroke-width="2" stroke-dasharray="4 4" class="animate-[dash_3s_linear_infinite]" />
+                        <text x="110" y="55" class="text-[10px] fill-gray-800 font-bold">外地核反射波</text>
+                    </svg>
+                `
+            },
+            {
+                id: 3,
+                title: "3. 地震波的分類與特性",
+                icon: "zap",
+                color: "text-yellow-500",
+                content: "地震波分為兩大類：\n1. 體波 (Body waves)：在地球內部傳播。包含速度最快的 P波 (壓縮波，與前進方向平行振動) 以及速度較慢的 S波 (剪力波，與前進方向垂直振動)。\n2. 表面波 (Surface waves)：如雷利波和勒夫波，沿著地表傳播，速度最慢但振幅通常最大，是造成建築物破壞的主因。",
+                analogy: "P波就像是「推擠排隊的人龍」，後面的人往前撞，力量一直往前傳（壓縮拉伸）；S波就像是「上下甩動一條粗繩子」，波浪往前跑，但繩子本身是上下動。表面波則像是「海浪」，在表面翻滾，所以對地表上的我們搖晃感最強烈。",
+                svg: `
+                    <svg viewBox="0 0 200 100" class="w-full h-32 bg-yellow-50 rounded-lg">
+                        <text x="10" y="25" class="text-xs font-bold fill-gray-700">P 波 (推拉)</text>
+                        <path d="M 60 20 Q 65 10 70 20 T 80 20 T 90 20 T 100 20 T 110 20 T 130 20 T 150 20" fill="none" stroke="#ca8a04" stroke-width="4" class="animate-[pulse_1s_ease-in-out_infinite]" />
+                        
+                        <text x="10" y="75" class="text-xs font-bold fill-gray-700">S 波 (上下)</text>
+                        <path d="M 60 75 Q 70 55 80 75 T 100 75 T 120 75 T 140 75 T 160 75" fill="none" stroke="#ca8a04" stroke-width="2">
+                            <animate attributeName="d" dur="1s" repeatCount="indefinite"
+                                values="M 60 75 Q 70 55 80 75 T 100 75 T 120 75 T 140 75 T 160 75;
+                                        M 60 75 Q 70 95 80 75 T 100 75 T 120 75 T 140 75 T 160 75;
+                                        M 60 75 Q 70 55 80 75 T 100 75 T 120 75 T 140 75 T 160 75" />
+                        </path>
+                    </svg>
+                `
+            },
+            {
+                id: 4,
+                title: "4. 反演問題與科學建模",
+                icon: "search",
+                color: "text-purple-500",
+                content: "地震學家經常處理「反演問題 (Inverse problems)」，意思是從已經發生的結果（地震圖上的波形記錄），往回推算原因（震源的性質與地下的介質參數）。不過，因為我們的觀測數據有限（測站分布不均），推算出來的模型通常具備「非唯一性」與「不確定性」。",
+                analogy: "反演問題就像是「聽聲辨位加猜物」。你坐在客廳，聽到廚房傳來「匡噹」一聲碎裂的巨響。你只能根據聲音的大小、清脆程度（結果），去「反推」是誰（貓咪還是風？）摔破了什麼（玻璃杯還是陶瓷碗？）。因為你沒親眼看到，所以你的推論可能會有一點不確定性。",
+                svg: `
+                    <svg viewBox="0 0 200 100" class="w-full h-32 bg-purple-50 rounded-lg">
+                        <defs>
+                            <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                <path d="M 0 0 L 10 5 L 0 10 z" fill="#9333ea" />
+                            </marker>
+                        </defs>
+                        <path d="M 20 50 L 40 50 L 50 20 L 60 80 L 70 40 L 80 50 L 100 50" fill="none" stroke="#9333ea" stroke-width="2" />
+                        <path d="M 110 50 L 130 50" fill="none" stroke="#9333ea" stroke-width="2" stroke-dasharray="4" marker-end="url(#arrow)" />
+                        <rect x="140" y="30" width="40" height="40" rx="4" fill="#d8b4fe" />
+                        <text x="150" y="55" class="text-xl">🤔</text>
+                        <text x="30" y="90" class="text-[10px] fill-gray-600">已知結果 (波形)</text>
+                        <text x="135" y="90" class="text-[10px] fill-gray-600">未知原因 (震源)</text>
+                    </svg>
+                `
+            },
+            {
+                id: 5,
+                title: "5. 地震學與板塊構造論",
+                icon: "layers",
+                color: "text-orange-500",
+                content: "地震觀測是支撐「板塊構造論」最重要的數據來源。科學家發現大多數地震都發生在板塊的邊界上。透過分析地震的「震源機制解」（例如斷層是互相推擠還是拉扯），我們能精確描述板塊如何運動。這在 1960 年代促成了地球科學界偉大的「典範轉移」。",
+                analogy: "把地球表面想像成一鍋濃湯，上面飄著幾塊巨大的「蘇打餅乾」（板塊）。餅乾本身不太會碎，但是當兩塊餅乾在濃湯表面「相撞」、「摩擦」或「分開」的邊緣處，就會碎裂掉屑，這就是地震！科學家就是靠著尋找這些碎屑的位置，畫出了所有餅乾的邊界。",
+                svg: `
+                    <svg viewBox="0 0 200 100" class="w-full h-32 bg-orange-50 rounded-lg">
+                        <rect x="20" y="30" width="75" height="40" rx="4" fill="#fdba74" class="animate-[slideRight_2s_infinite_alternate]" />
+                        <rect x="105" y="30" width="75" height="40" rx="4" fill="#fdba74" class="animate-[slideLeft_2s_infinite_alternate]" />
+                        <circle cx="100" cy="50" r="15" fill="#ea580c" class="animate-ping opacity-50" />
+                        <text x="80" y="90" class="text-[10px] fill-gray-700">板塊推擠產生地震</text>
+                    </svg>
+                `
+            },
+            {
+                id: 6,
+                title: "6. 地震災害 (Hazards) 與風險 (Risks) 的區別",
+                icon: "alert-triangle",
+                color: "text-red-500",
+                content: "在科學上，這兩者有嚴格區分：\n「災害 (Hazards)」是地震引發的自然現象，例如地表的劇烈震動，這是無法避免的。\n「風險 (Risks)」則是災害對人命、社會與財產構成的危險。雖然我們無法阻止災害發生，但可以透過人為行動（如建築耐震設計）來大幅降低風險。",
+                analogy: "「下暴雨」是一個自然災害 (Hazard)，你沒辦法叫老天爺不要下雨。但是，「不撐傘跑出去淋雨感冒」就是一種風險 (Risk)。如果你乖乖待在堅固的屋子裡，或是撐了一把好傘（做好耐震準備），就算雨下得再大（災害很大），你感冒的風險 (Risk) 也會降到最低。",
+                svg: `
+                    <svg viewBox="0 0 200 100" class="w-full h-32 bg-red-50 rounded-lg">
+                        <text x="30" y="50" class="text-3xl animate-bounce">🌧️</text>
+                        <text x="25" y="80" class="text-xs font-bold fill-red-700">災害(無法控)</text>
+                        
+                        <text x="90" y="55" class="text-xl">➡️</text>
+
+                        <text x="140" y="50" class="text-3xl">☔</text>
+                        <text x="135" y="80" class="text-xs font-bold fill-green-700">降低風險</text>
+                    </svg>
+                `
+            },
+            {
+                id: 7,
+                title: "7. 地震工程與建築安全",
+                icon: "building",
+                color: "text-indigo-500",
+                content: "有一句名言：「地震不殺人，建築物才殺人」。地震工程研究的是地面「加速度 (Acceleration)」如何破壞建築。關鍵因素包括建築物的「共振週期」（當地震波頻率與建築物自然頻率相近時搖晃最劇烈）、基地的沉積物放大效應（如1985年墨西哥城地震），以及建築材料（鋼筋混凝土的韌性優於無筋磚石）。",
+                analogy: "你推過盪鞦韆嗎？如果你「隨便亂推」，鞦韆盪不高。但如果你抓準節奏，在鞦韆盪到最高點時「順勢推一把」（共振效應），鞦韆就會越盪越高！地震波如果剛好對上了建築物的「節奏」，大樓就會像鞦韆一樣劇烈搖晃而斷裂。",
+                svg: `
+                    <svg viewBox="0 0 200 100" class="w-full h-32 bg-indigo-50 rounded-lg overflow-hidden">
+                        <rect x="0" y="80" width="200" height="20" fill="#a5b4fc" />
+                        <rect x="80" y="20" width="40" height="60" fill="#4f46e5" class="origin-bottom animate-[swing_1s_ease-in-out_infinite_alternate]" />
+                        <rect x="85" y="30" width="8" height="8" fill="#e0e7ff" />
+                        <rect x="107" y="30" width="8" height="8" fill="#e0e7ff" />
+                        <rect x="85" y="50" width="8" height="8" fill="#e0e7ff" />
+                        <rect x="107" y="50" width="8" height="8" fill="#e0e7ff" />
+                    </svg>
+                `
+            },
+            {
+                id: 8,
+                title: "8. 長期預報 (Forecasting) vs 短期預測 (Prediction)",
+                icon: "bar-chart",
+                color: "text-teal-500",
+                content: "預報 (Forecasting)：根據歷史地震紀錄和彈性回跳模型，利用統計學估計某地區在未來數十年內發生大地震的「機率」。\n預測 (Prediction)：指精確指出數天或數小時內的時間、地點與規模。目前科學界對此尚無公認的成功方法。關於動物異常、氡氣變化等「前兆」，在科學上仍存有極大爭議且不可靠。",
+                analogy: "預報 (Forecasting) 就像是說：「台灣夏天有很高的機率會被颱風侵襲」，這是根據長年氣候統計出來的，非常科學且實用。而預測 (Prediction) 則是硬要說：「下週二下午 3 點 15 分，台北市信義區一定會有一陣暴雨」，這在目前的科學技術上幾乎是不可能做到的。",
+                svg: `
+                    <svg viewBox="0 0 200 100" class="w-full h-32 bg-teal-50 rounded-lg">
+                        <text x="20" y="30" class="text-xs font-bold fill-teal-800">長期預報 (機率)</text>
+                        <path d="M 20 80 L 40 70 L 60 75 L 80 40 L 100 60" fill="none" stroke="#0d9488" stroke-width="3" />
+                        
+                        <text x="120" y="30" class="text-xs font-bold fill-red-800">短期預測 (太難)</text>
+                        <text x="140" y="65" class="text-3xl">🎯❓</text>
+                    </svg>
+                `
+            },
+            {
+                id: 9,
+                title: "9. 次生災害：海嘯、山崩與土壤液化",
+                icon: "droplets",
+                color: "text-cyan-500",
+                content: "地震的搖晃結束後，危險還沒結束！次生災害包括：\n1. 海嘯：海底斷層錯動推擠海水產生，傳播速度較地震波慢，所以能建立預警系統。\n2. 土壤液化：富含地下水的沙土受強烈搖晃後，水壓上升導致土壤失去承載力，變得像液體一樣（如1964年日本新潟地震）。\n3. 火災：瓦斯管線破裂引發，有時比地震本身還致命。",
+                analogy: "去海邊玩沙時，如果你在一塊濕潤平坦的沙地上，用腳丫子快速且連續地「原地踏步震動」，你會發現原本硬硬的沙地突然開始冒水，變得像泥巴湯一樣，你的腳就會陷進去。這就是標準的「土壤液化」現象！",
+                svg: `
+                    <svg viewBox="0 0 200 100" class="w-full h-32 bg-cyan-50 rounded-lg">
+                        <path d="M 0 70 Q 50 60 100 70 T 200 70 L 200 100 L 0 100 Z" fill="#67e8f9" class="animate-[wave_3s_ease-in-out_infinite_alternate]" />
+                        <rect x="85" y="40" width="30" height="40" fill="#94a3b8" class="animate-[sink_4s_ease-in_infinite]" />
+                        <text x="70" y="20" class="text-xs font-bold fill-cyan-800">土壤液化建築下沉</text>
+                    </svg>
+                `
+            },
+            {
+                id: 10,
+                title: "10. 核試驗監測與條約核查",
+                icon: "radio",
+                color: "text-rose-500",
+                content: "地震學在維護世界和平上也扮演要角！科學家透過全球地震網監測地下核試爆。其原理在於比較體波規模 (mb) 與表面波規模 (Ms) 的比例。自然地震主要是斷層滑動，會產生大量的「剪力能(S波與表面波)」；而地下核爆是球狀向外膨脹，會產生極強的「壓縮能(P波)」，藉此特徵便能揪出秘密核試爆。",
+                analogy: "想像你要弄斷一根免洗筷（自然地震），你會「用力折斷」它，這會產生很大的扭曲與震動（剪力）。但如果是地下核爆，就像是在土裡「引爆一顆氣球」，它是四面八方「往外推擠」，第一下推出去的力量（P波）超級大，但幾乎沒有扭曲的力量。",
+                svg: `
+                    <svg viewBox="0 0 200 100" class="w-full h-32 bg-rose-50 rounded-lg">
+                        <text x="30" y="20" class="text-[10px] font-bold fill-rose-800">地震 (錯動)</text>
+                        <path d="M 20 40 L 40 60" fill="none" stroke="#be123c" stroke-width="4" />
+                        <path d="M 45 40 L 65 60" fill="none" stroke="#be123c" stroke-width="4" />
+                        
+                        <text x="120" y="20" class="text-[10px] font-bold fill-rose-800">核爆 (膨脹)</text>
+                        <circle cx="140" cy="50" r="10" fill="#f43f5e" class="animate-ping" />
+                        <circle cx="140" cy="50" r="20" fill="none" stroke="#f43f5e" stroke-width="2" />
+                        <path d="M 140 20 L 140 10 M 140 80 L 140 90 M 110 50 L 100 50 M 170 50 L 180 50" stroke="#be123c" stroke-width="2" />
+                    </svg>
+                `
+            },
+            {
+                id: 11,
+                title: "11. 資源開發與地殼影像",
+                icon: "target",
+                color: "text-slate-500",
+                content: "地震學不僅用於防災，也具有極高的經濟價值。在「探勘地震學」中，工程師會在地表使用震動車或炸藥作為人工震源，並密集佈設接收器。藉由分析地震波在地下不同岩層邊界產生的「反射波」，可以繪製出極為精細的地層剖面圖，用來精準尋找石油、天然氣與礦產。",
+                analogy: "這完全就像是漁船在海上使用「聲納」找魚群，或是蝙蝠在夜間利用「超音波」辨識障礙物。我們對著地底下大喊一聲（人工震源），然後聽「回音」（反射波）是從多深的地方彈回來的，藉此畫出地底下的藏寶圖！",
+                svg: `
+                    <svg viewBox="0 0 200 100" class="w-full h-32 bg-slate-50 rounded-lg">
+                        <rect x="0" y="60" width="200" height="40" fill="#cbd5e1" />
+                        <path d="M 0 80 Q 100 60 200 80 L 200 100 L 0 100 Z" fill="#94a3b8" />
+                        <circle cx="50" cy="30" r="4" fill="#334155" />
+                        <path d="M 50 35 L 100 70 L 150 35" fill="none" stroke="#64748b" stroke-width="2" stroke-dasharray="4" class="animate-[pulse_1.5s_infinite]" />
+                        <rect x="145" y="25" width="10" height="10" fill="#ef4444" />
+                        <text x="20" y="25" class="text-[10px]">震源車</text>
+                        <text x="160" y="25" class="text-[10px]">接收器</text>
+                        <text x="100" y="90" class="text-[10px] font-bold fill-slate-800">石油儲藏層</text>
+                    </svg>
+                `
+            }
+        ];
+
+        let openId = 1;
+        const container = document.getElementById('accordion-container');
+
+        function render() {
+            container.innerHTML = topics.map(topic => {
+                const isOpen = openId === topic.id;
+                
+                return `
+                <div class="bg-white rounded-xl shadow-sm border transition-all duration-300 overflow-hidden ${
+                    isOpen ? 'border-blue-300 shadow-md ring-1 ring-blue-100' : 'border-gray-200 hover:border-blue-200'
+                }">
+                    <button onclick="toggleCard(${topic.id})" class="w-full px-6 py-4 flex items-center justify-between focus:outline-none text-left">
+                        <div class="flex items-center gap-4">
+                            <div class="p-2 bg-gray-50 rounded-lg">
+                                <i data-lucide="${topic.icon}" class="w-6 h-6 ${topic.color}"></i>
+                            </div>
+                            <h2 class="text-lg font-bold text-gray-800">${topic.title}</h2>
+                        </div>
+                        <i data-lucide="${isOpen ? 'chevron-up' : 'chevron-down'}" class="w-5 h-5 text-gray-400"></i>
+                    </button>
+
+                    <div class="transition-all duration-500 ease-in-out ${
+                        isOpen ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'
+                    }">
+                        <div class="px-6 pb-6 pt-2 border-t border-gray-100">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                
+                                <div class="space-y-4">
+                                    <div>
+                                        <h3 class="text-sm font-semibold text-blue-600 uppercase tracking-wider mb-2">科學原理解析</h3>
+                                        <p class="text-gray-700 leading-relaxed text-sm whitespace-pre-line">${topic.content}</p>
+                                    </div>
+                                    
+                                    <div class="bg-amber-50 rounded-lg p-4 border border-amber-100 relative mt-6">
+                                        <span class="absolute -top-3 left-4 bg-amber-400 text-white text-xs font-bold px-2 py-1 rounded">大師舉例 💡</span>
+                                        <p class="text-amber-900 mt-2 text-sm leading-relaxed">${topic.analogy}</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-col justify-center items-center">
+                                    <h3 class="text-sm font-semibold text-gray-500 mb-3 w-full text-left">動態圖解</h3>
+                                    ${topic.svg}
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+
+            // 重新初始化 Lucide Icons
+            lucide.createIcons();
+        }
+
+        // 切換展開/收合狀態
+        window.toggleCard = function(id) {
+            openId = openId === id ? null : id;
+            render();
+        };
+
+        // 初始渲染
+        render();
+    </script>
+</body>
+</html>
